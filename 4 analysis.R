@@ -2,7 +2,7 @@ library(tidyverse)
 library(rjags)
 
 # Read in the big data set
-final.data.VID <- read.csv("/Volumes/PAY/Political Science/Liz 2020/Data/final-data-VID.csv")
+final.data.VID <- read.csv("final-data-VID.csv")
 
 # Create variables to be used as the X in the model
 VID.data <- final.data.VID %>%
@@ -24,9 +24,9 @@ voterID.state <- final.data.VID %>%
   group_by(state_code) %>%
   summarize(voterID.st=mean(voterID))
 
-# Read in the model
-#source("/Volumes/PAY/Political Science/Liz 2020/Programs/model-normal.R")
-#source("/Volumes/PAY/Political Science/Liz 2020/Programs/model-cauchy.R")
+# Read in the model -- CHOOSE ONE!
+source("model-normal.R")
+#source("model-cauchy.R")
 
 
 # put data in a list
@@ -47,15 +47,6 @@ nThin <- 500
 nIter <- ceiling((nSave*nThin)/nChains)
 
 # Initial guess
-#library(lme4)
-
-#mle.init <- lmer(Y~(1|state_code)+(voterID|state_code)+logit.past.rep+ALR.white
-                # +ALR.black+ALR.hispanic+logit.female+ALR.age29andunder
-                # +ALR.age65andolder+median_hh_inc.st+logit.unemploy+logit.lesshs
-                # +logit.rural,data = VID.data) 
-#b <- coefficients(mle.init)
-#initial.parm.guess <- b$state_code %>%
-#  summarize_if(is.numeric,mean)
 mle.test <- lm(Y~voterID+logit.past.rep+ALR.white+ALR.black+ALR.hispanic
                +logit.female+ALR.age29andunder+ALR.age65andolder+median_hh_inc.st
                +logit.unemploy+logit.lesshs+logit.rural,data = VID.data)
@@ -65,8 +56,7 @@ initial.list <- list(g.0=initial.parm.guess[1],
                      beta=c(initial.parm.guess[3],initial.parm.guess[4],initial.parm.guess[5],
                             initial.parm.guess[6],initial.parm.guess[7],initial.parm.guess[8],
                             initial.parm.guess[9],initial.parm.guess[10],initial.parm.guess[11],
-                            initial.parm.guess[12],initial.parm.guess[13]),
-                     nu=4)
+                            initial.parm.guess[12],initial.parm.guess[13]))
   
 # create JAGS model
 mod <- jags.model(textConnection(modelString),data=datal,inits=initial.list,
@@ -85,7 +75,7 @@ dic.check
 # check posterior
 gelman.diag(samp)
 effectiveSize(samp)
-source("/Volumes/PAY/Courses/MAT350/Doing Bayesian Data Analysis/Programs/DBDA2E-utilities.R")
+source("DBDA2E-utilities.R")
 diagMCMC(codaObject=samp,parName="g.0") 
 diagMCMC(codaObject=samp,parName="g.1") 
 diagMCMC(codaObject=samp,parName="beta[1]") 
@@ -140,6 +130,6 @@ sd(GOP.share.VID)
 quantile(GOP.share.VID,c(0.025,0.975))
 sum(GOP.share.VID>0)/length(GOP.share.VID)
 
-# Output results to CSV file
-write.csv(mcmc,"/Volumes/PAY/Political Science/Liz 2020/Programs/Results/mcmc-cauchy.csv",row.names=FALSE)
-write.csv(GOP.share.VID,"/Volumes/PAY/Political Science/Liz 2020/Programs/Results/GOP-share-cauchy.csv",row.names=FALSE)
+# Output results to CSV file -- change normal to cauchy if using the 2nd model
+write.csv(mcmc,"mcmc-normal.csv",row.names=FALSE)
+write.csv(GOP.share.VID,"GOP-share-normal.csv",row.names=FALSE)
