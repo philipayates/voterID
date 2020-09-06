@@ -1,7 +1,7 @@
 library(tidyverse)
 
 # Read in data
-all.offices.2018.County <- read.csv("/Volumes/PAY/Political Science/Liz 2020/all-offices-2018-County.csv")
+all.offices.2018.County <- read.csv("all-offices-2018-County.csv")
 
 # Remove rows with FIPS NA
 all.offices.2018.County.noNA <- all.offices.2018.County %>%
@@ -10,7 +10,7 @@ all.offices.2018.County.noNA <- all.offices.2018.County %>%
 # Select only congressional data
 congressional.2018.county <- all.offices.2018.County.noNA %>%
   filter(office=="US Representative" | office=="US Representative (Partial Term Ending 01/03/2019)")
-write_csv(congressional.2018.county,"/Volumes/PAY/Political Science/Liz 2020/Data/congressional-2018-county.csv")
+write_csv(congressional.2018.county,"congressional-2018-county.csv")
 
 # Convert parties to democrat, republican, or other
 congress.2018 <- congressional.2018.county %>%
@@ -47,5 +47,5 @@ congress.2018.wide <- congress.2018.wide %>%
          share.other=votes.other/total,
          Y=log(votes.rep/votes.dem))
   
-write_csv(congress.2018.wide,"/Volumes/PAY/Political Science/Liz 2020/Data/county-votes.csv")  
+write_csv(congress.2018.wide,"county-votes.csv")  
 
