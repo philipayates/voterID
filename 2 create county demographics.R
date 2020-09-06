@@ -1,7 +1,7 @@
 library(tidyverse)
 
 # Read in data
-congressional.2018.county <- read.csv("/Volumes/PAY/Political Science/Liz 2020/Data/congressional-2018-county.csv")
+congressional.2018.county <- read.csv("congressional-2018-county.csv")
 
 # Select variables for demographics
 congress.2018.demo.1 <- congressional.2018.county %>%
@@ -35,7 +35,7 @@ congress.2018.demo.3 <- congress.2018.demo.2 %>%
             rural_pct=mean(rural_pct),ruralurban_cc=mean(ruralurban_cc),voterID=mean(voterID))
 
 # Merge with county.votes
-county.votes <- read.csv("/Volumes/PAY/Political Science/Liz 2020/Data/county-votes.csv")
+county.votes <- read.csv("county-votes.csv")
 county.demographics <- county.votes %>%
   inner_join(congress.2018.demo.3,by="fips")
-write_csv(county.demographics,"/Volumes/PAY/Political Science/Liz 2020/Data/county-demographics.csv")
+write_csv(county.demographics,"county-demographics.csv")
